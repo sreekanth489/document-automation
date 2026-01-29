@@ -202,3 +202,71 @@ h1 {
   color: #0066cc;
   margin-bottom: 1rem;
 }
+
+/* Provider Status */
+.provider-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #ccc;
+}
+
+.provider-status.available {
+  border-left-color: #28a745;
+}
+
+.provider-status.unavailable {
+  border-left-color: #dc3545;
+}
+
+.provider-status.loading {
+  border-left-color: #ffc107;
+}
+
+.provider-icon {
+  font-size: 1.5rem;
+}
+
+.provider-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.provider-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.provider-model {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.provider-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.provider-badge.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.provider-badge.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.provider-text {
+  color: #666;
+  font-size: 0.9rem;
+}

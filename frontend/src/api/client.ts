@@ -47,6 +47,18 @@ export interface FormFillResponse {
   screenshot_path: string | null;
 }
 
+export interface ProviderStatus {
+  configured_provider: string;
+  available: boolean;
+  message: string;
+  config: {
+    ollama_base_url: string;
+    ollama_text_model: string;
+    ollama_vision_model: string;
+    ocr_engine: string;
+  };
+}
+
 export async function uploadDocuments(
   passportFile: File | null,
   g28File: File | null
@@ -86,5 +98,10 @@ export async function fillForm(
     headless,
   });
 
+  return response.data;
+}
+
+export async function getProviderStatus(): Promise<ProviderStatus> {
+  const response = await axios.get<ProviderStatus>(`${API_BASE}/provider-status`);
   return response.data;
 }

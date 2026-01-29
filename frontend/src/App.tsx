@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileUpload } from './components/FileUpload';
 import { ExtractedDataDisplay } from './components/ExtractedData';
 import { FormFiller } from './components/FormFiller';
+import { ProviderStatus } from './components/ProviderStatus';
 import {
   uploadDocuments,
   fillForm,
+  getProviderStatus,
   PassportData,
   G28Data,
   ExtractedData,
+  ProviderStatus as ProviderStatusType,
 } from './api/client';
 
 type Status = 'idle' | 'uploading' | 'extracting' | 'filling' | 'success' | 'error';
@@ -21,6 +24,22 @@ function App() {
   const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState<string>('');
   const [screenshotPath, setScreenshotPath] = useState<string | null>(null);
+  const [providerStatus, setProviderStatus] = useState<ProviderStatusType | null>(null);
+  const [providerLoading, setProviderLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProviderStatus = async () => {
+      try {
+        const status = await getProviderStatus();
+        setProviderStatus(status);
+      } catch (error) {
+        console.error('Failed to fetch provider status:', error);
+      } finally {
+        setProviderLoading(false);
+      }
+    };
+    fetchProviderStatus();
+  }, []);
 
   const handleUpload = async () => {
     if (!passportFile && !g28File) {
@@ -102,6 +121,8 @@ function App() {
       <p className="subtitle">
         Upload passport and G-28 documents to automatically fill the immigration form
       </p>
+
+      <ProviderStatus status={providerStatus} loading={providerLoading} />
 
       {message && (
         <div className={`status ${getStatusClass()}`}>
