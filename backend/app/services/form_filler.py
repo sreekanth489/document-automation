@@ -177,50 +177,61 @@ async def fill_form(
 
             # Part 3: Beneficiary Passport Details
             if passport:
+                # Combine first and middle name for the form field
+                full_first_name = passport.first_name or ""
+                if passport.middle_name:
+                    full_first_name = f"{full_first_name} {passport.middle_name}".strip()
+
                 passport_mappings = [
-                    ("Beneficiary Last Name", passport.last_name, [
-                        'input[name*="last" i][name*="name" i]',
-                        'input[id*="last" i][id*="name" i]',
-                        'input[name*="beneficiary" i][name*="last" i]'
+                    ("Passport Last Name", passport.last_name, [
+                        '#passport-surname',
+                        'input[name="passport-surname"]',
+                        'input[id="passport-surname"]'
                     ]),
-                    ("Beneficiary First Name", passport.first_name, [
-                        'input[name*="first" i][name*="name" i]',
-                        'input[id*="first" i][id*="name" i]',
-                        'input[name*="beneficiary" i][name*="first" i]'
-                    ]),
-                    ("Beneficiary Middle Name", passport.middle_name, [
-                        'input[name*="beneficiary" i][name*="middle" i]',
-                        'input[id*="beneficiary" i][id*="middle" i]'
+                    ("Passport First Name(s)", full_first_name if full_first_name else None, [
+                        '#passport-given-names',
+                        'input[name="passport-given-names"]',
+                        'input[id="passport-given-names"]'
                     ]),
                     ("Passport Number", passport.passport_number, [
-                        'input[name*="passport" i][name*="number" i]',
-                        'input[id*="passport" i]',
-                        'input[name*="passport" i]'
+                        '#passport-number',
+                        'input[name="passport-number"]',
+                        'input[id="passport-number"]'
                     ]),
                     ("Country of Issue", passport.country_of_issue, [
-                        'input[name*="country" i][name*="issue" i]',
-                        'input[id*="country" i][id*="issue" i]'
+                        '#passport-country',
+                        'input[name="passport-country"]',
+                        'input[id="passport-country"]'
                     ]),
                     ("Nationality", passport.nationality, [
-                        'input[name*="nationality" i]',
-                        'input[id*="nationality" i]'
+                        '#passport-nationality',
+                        'input[name="passport-nationality"]',
+                        'input[id="passport-nationality"]'
                     ]),
                     ("Date of Birth", passport.date_of_birth, [
-                        'input[name*="birth" i][type="date"]',
-                        'input[id*="birth" i][type="date"]',
-                        'input[name*="dob" i]'
+                        '#passport-dob',
+                        'input[name="passport-dob"]',
+                        'input[id="passport-dob"]'
                     ]),
                     ("Place of Birth", passport.place_of_birth, [
-                        'input[name*="place" i][name*="birth" i]',
-                        'input[id*="place" i][id*="birth" i]'
+                        '#passport-pob',
+                        'input[name="passport-pob"]',
+                        'input[id="passport-pob"]'
+                    ]),
+                    ("Sex", passport.sex, [
+                        '#passport-sex',
+                        'input[name="passport-sex"]',
+                        'input[id="passport-sex"]'
                     ]),
                     ("Date of Issue", passport.date_of_issue, [
-                        'input[name*="issue" i][type="date"]:not([name*="country"])',
-                        'input[id*="issue" i][type="date"]'
+                        '#passport-issue-date',
+                        'input[name="passport-issue-date"]',
+                        'input[id="passport-issue-date"]'
                     ]),
                     ("Date of Expiration", passport.date_of_expiration, [
-                        'input[name*="expir" i][type="date"]',
-                        'input[id*="expir" i][type="date"]'
+                        '#passport-expiry-date',
+                        'input[name="passport-expiry-date"]',
+                        'input[id="passport-expiry-date"]'
                     ]),
                 ]
 
@@ -233,16 +244,6 @@ async def fill_form(
                             filled_fields.append(label)
                         else:
                             failed_fields.append(label)
-
-                # Handle sex radio button
-                if passport.sex:
-                    sex = passport.sex.upper()
-                    if sex in ["M", "F", "X"]:
-                        success = await click_radio_by_label(page, "Sex", sex)
-                        if success:
-                            filled_fields.append("Sex")
-                        else:
-                            failed_fields.append("Sex")
 
             await page.wait_for_timeout(500)
 
