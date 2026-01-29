@@ -5,6 +5,7 @@ from pathlib import Path
 
 from app.routers import upload, automation
 from app.config import get_settings
+from app.services.extractors import check_provider_availability
 
 
 def create_app() -> FastAPI:
@@ -56,6 +57,23 @@ def create_app() -> FastAPI:
     @app.get("/health")
     async def health_check():
         return {"status": "healthy"}
+
+    @app.get("/api/provider-status")
+    async def provider_status():
+        """Check the status of the configured extraction provider."""
+        settings = get_settings()
+        status = await check_provider_availability()
+        return {
+            "configured_provider": settings.extraction_provider.value,
+            "available": status["available"],
+            "message": status["message"],
+            "config": {
+                "ollama_base_url": settings.ollama_base_url,
+                "ollama_text_model": settings.ollama_text_model,
+                "ollama_vision_model": settings.ollama_vision_model,
+                "ocr_engine": settings.ocr_engine,
+            }
+        }
 
     return app
 

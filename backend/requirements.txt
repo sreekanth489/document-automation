@@ -9,3 +9,13 @@ python-dotenv>=1.0.0
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
 aiofiles>=23.2.1
+
+# For Ollama integration
+httpx>=0.25.0
+
+# For OCR-based extraction (OLLAMA_OCR provider)
+easyocr>=1.7.0
+numpy>=1.24.0
+
+# Optional: Alternative OCR engine (uncomment if using tesseract)
+# pytesseract>=0.3.10

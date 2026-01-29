@@ -5,7 +5,8 @@ A web application that extracts data from passport and G-28 forms using AI visio
 ## Features
 
 - **Document Upload**: Upload passport and G-28 forms (PDF or images)
-- **AI-Powered Extraction**: Uses Claude's vision API to extract structured data from documents
+- **AI-Powered Extraction**: Uses AI vision to extract structured data from documents
+- **Multiple Extraction Providers**: Choose from Anthropic Claude, Ollama Vision models, or OCR + Ollama text models
 - **Data Review**: Review and edit extracted data before form submission
 - **Browser Automation**: Automatically fills web forms using Playwright
 - **Screenshot Capture**: Captures screenshots of filled forms for verification
@@ -14,7 +15,10 @@ A web application that extracts data from passport and G-28 forms using AI visio
 
 - **Backend**: FastAPI (Python)
 - **Frontend**: React + TypeScript + Vite
-- **AI Extraction**: Anthropic Claude API (vision)
+- **AI Extraction**: Configurable providers:
+  - Anthropic Claude API (vision) - default
+  - Ollama with vision models (LLaVA, Qwen-VL)
+  - OCR + Ollama text models (NuMarkdown-8B, Mistral, etc.)
 - **Browser Automation**: Playwright
 
 ## Project Structure
@@ -86,8 +90,63 @@ document-automation/
 5. **Configure Environment**
    ```bash
    cp .env.example backend/.env
-   # Edit backend/.env and add your Anthropic API key
+   # Edit backend/.env - see "Extraction Providers" section below
    ```
+
+## Extraction Providers
+
+The application supports three extraction providers. Configure via `EXTRACTION_PROVIDER` in your `.env` file.
+
+### 1. Anthropic Claude (Default)
+
+Uses Claude's vision API for highest accuracy. Requires an API key.
+
+```env
+EXTRACTION_PROVIDER=anthropic
+ANTHROPIC_API_KEY=sk-ant-your-api-key-here
+ANTHROPIC_MODEL=claude-sonnet-4-20250514
+```
+
+### 2. Ollama Vision Models
+
+Uses local vision-capable models via Ollama. Free and runs locally.
+
+```bash
+# Install Ollama and pull a vision model
+ollama pull llava:13b
+# or: ollama pull qwen-vl, bakllava, etc.
+```
+
+```env
+EXTRACTION_PROVIDER=ollama_vision
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_VISION_MODEL=llava:13b
+```
+
+### 3. OCR + Ollama Text Models
+
+Uses OCR (EasyOCR/Tesseract) for text extraction, then a text LLM for structuring. Most cost-effective option.
+
+```bash
+# Install Ollama and pull a text model
+ollama pull numind/numarkdown-8b-thinking
+# or: ollama pull llama3.1:8b, mistral, etc.
+```
+
+```env
+EXTRACTION_PROVIDER=ollama_ocr
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_TEXT_MODEL=numind/numarkdown-8b-thinking
+OCR_ENGINE=easyocr
+OCR_LANGUAGES=en
+```
+
+### Check Provider Status
+
+Once the backend is running, check provider availability:
+```bash
+curl http://localhost:8000/api/provider-status
+```
 
 ## Running the Application
 
@@ -125,6 +184,7 @@ document-automation/
 | `/api/extract/{session_id}` | GET | Get extracted data by session |
 | `/api/fill-form` | POST | Fill form with extracted data |
 | `/api/screenshot/{filename}` | GET | Get form screenshot |
+| `/api/provider-status` | GET | Check extraction provider status |
 
 ## Extracted Data
 
